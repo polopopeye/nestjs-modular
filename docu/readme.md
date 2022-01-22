@@ -235,3 +235,79 @@ USO dentro de una funcion en ese mismo servicio:
     DatabaseModule,
   ],
 ```
+
+# DOCUMENTACION !!! SWAGER!!!!
+
+instalar dependencias
+si hay problemas instalando
+
+new -
+`npm i @nestjs/swagger`
+old- stable
+`npm i @nestjs/swagger@4.5.12-next.1`
+
+y instalar:
+
+`npm i swagger-ui-express`
+
+```
+// src/main.ts
+
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+async function bootstrap() {
+  ...
+  const config = new DocumentBuilder()
+    .setTitle('API')
+    .setDescription('PLATZI STORE')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
+  ...
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+```
+# nest-cli.json
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "plugins": ["@nestjs/swagger/plugin"]
+  }
+}
+```
+
+@ApiTags('products')
+@ApiOperation({ summary: 'Get a list of the products' })
+
+ATENCION! asegurar que sea ....dto.ts
+verificar nest prebuild (limpia cache)
+
+# CORS ALLOW
+
+// main.ts
+`app.enableCors();`
+
+# Deploy Heroku
+
+packages JSON, poner version node =>
+´´´´
+"engines":{
+"node": "14.x"
+}
+´´´´
+.Procfile <= archivo heroku
+contenido:
+
+```
+npm run start:prod
+```
+
+Instalar -> Heroku CLI
+
+y seguir pasos
+verificar puerto de variables de entorno y actualizar app.listen();

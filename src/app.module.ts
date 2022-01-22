@@ -15,11 +15,11 @@ import Joi from 'joi';
       envFilePath: enviroments[process.env.NODE_ENV] || '.env',
       load: [config],
       isGlobal: true,
-      validationSchema: Joi.object({
-        API_KEY: Joi.string().required(),
-        DB_NAME: Joi.string().required(),
-        DB_PORT: Joi.number().required(),
-      }),
+      // validationSchema: Joi.object({
+      //   API_KEY: Joi.string().required(),
+      //   DB_NAME: Joi.string().required(),
+      //   DB_PORT: Joi.number().required(),
+      // }),
     }),
     HttpModule,
     UsersModule,
