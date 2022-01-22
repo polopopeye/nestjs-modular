@@ -125,3 +125,113 @@ export class DatabaseModule {}
 ```
 
 En caso de que se créen loops, utilizar los global modules, pero no es aconsejable.
+
+## ConfigModule
+
+integrar .env files
+en app module,
+
+```
+   ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
+```
+
+y se importa a un servicio:
+
+```
+  constructor(private configService: ConfigService) {}
+```
+
+y se usa:
+
+```
+  const apiKey = this.configService.get('API_KEY');
+  const dbName = this.configService.get('DATABASE_NAME');
+  console.log(apiKey, dbName);
+```
+
+### Blindar con Typos en configModule: Tipado Seguro
+
+Creamos un archivo config con las constantes:
+
+```
+import { registerAs } from '@nestjs/config';
+
+export default registerAs('config', () => {
+  return {
+    database: {
+      name: process.env.DB_NAME,
+      port: process.env.DB_PORT,
+    },
+    apiKey: process.env.API_KEY,
+  };
+});
+
+```
+
+en APPMODULE:
+
+```
+    // load: [config],
+
+    ConfigModule.forRoot({
+      envFilePath: enviroments[process.env.NODE_ENV] || '.env',
+      load: [config],
+      isGlobal: true,
+    }),
+
+```
+
+Luego desde el servicio lo podemos llamar dentro del constructor
+
+```
+
+ // @Inject(config.KEY) private configService: ConfigType<typeof config>,
+
+ constructor(
+    @Inject(config.KEY) private configService: ConfigType<typeof config>,
+  ) {}
+```
+
+USO dentro de una funcion en ese mismo servicio:
+
+```
+    const apiKey = this.configService.apiKey;
+    const dbName = this.configService.database.name;
+```
+
+### Validar datos en variable de entorno
+
+1- instalamos el joi:
+
+`npm install joi`
+
+2- Añadimos la config a app.module
+
+```
+  //    validationSchema: Joi.object({
+  //      API_KEY: Joi.string().required(),
+  //      DB_NAME: Joi.string().required(),
+  //      DB_PORT: Joi.number().required(),
+  //    }),
+
+
+        imports: [
+    ConfigModule.forRoot({
+      envFilePath: enviroments[process.env.NODE_ENV] || '.env',
+      load: [config],
+      isGlobal: true,
+      validationSchema: Joi.object({
+        API_KEY: Joi.string().required(),
+        DB_NAME: Joi.string().required(),
+        DB_PORT: Joi.number().required(),
+      }),
+    }),
+    HttpModule,
+    UsersModule,
+    ProductsModule,
+    DatabaseModule,
+  ],
+```
